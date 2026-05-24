@@ -70,6 +70,11 @@
                 <p>Copy and paste this into your terminal.</p>
               </div>
 
+              <label class="sf-cli-checkbox-row" for="sf-cli-include-redirect">
+                <input id="sf-cli-include-redirect" class="sf-cli-checkbox" type="checkbox" />
+                <span>Include current page in frontdoor redirect</span>
+              </label>
+
               <div class="sf-cli-output-head">
                 <button class="sf-cli-inline-action sf-cli-copy" type="button">Copy Command</button>
                 <button class="sf-cli-inline-action sf-cli-copy-frontdoor" type="button">Copy Frontdoor URL</button>
@@ -253,6 +258,24 @@
         font-size: 0.625rem;
         line-height: 0.9rem;
         color: #5c5c5c;
+      }
+      #${ROOT_ID} .sf-cli-checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0.2rem 0 0.5rem;
+        font-size: 0.6875rem;
+        line-height: 1rem;
+        color: #444444;
+        cursor: pointer;
+        user-select: none;
+      }
+      #${ROOT_ID} .sf-cli-checkbox {
+        margin: 0;
+        width: 0.875rem;
+        height: 0.875rem;
+        accent-color: #0176d3;
+        flex: 0 0 auto;
       }
       #${ROOT_ID} .sf-cli-grid {
         display: grid;
@@ -585,6 +608,7 @@
     const aliasEl = requireElement(root, ".sf-cli-alias");
     const projectEl = requireElement(root, ".sf-cli-project");
     const outputEl = requireElement(root, "#sf-cli-output");
+    const includeRedirectEl = requireElement(root, "#sf-cli-include-redirect");
     const statusEl = requireElement(root, ".sf-cli-status");
     const toastRegionEl = requireElement(root, ".sf-cli-toast-region");
     const comboboxEl = requireElement(root, ".sf-cli-combobox");
@@ -619,7 +643,8 @@
       currentFrontdoorUrl = buildFrontdoorUrl({
         instanceUrl: state.requestPayload.instanceUrl,
         sid: state.requestPayload.sid,
-        sourceUrl: state.requestPayload.sourceUrl
+        sourceUrl: state.requestPayload.sourceUrl,
+        includeRetUrl: includeRedirectEl.checked
       });
       statusEl.textContent = "";
     };
@@ -724,6 +749,7 @@
     requireElement(root, ".sf-cli-backdrop").addEventListener("click", () => root.remove());
     aliasEl.addEventListener("input", renderCommand);
     projectEl.addEventListener("input", renderCommand);
+    includeRedirectEl.addEventListener("change", renderCommand);
 
     renderCommand();
     aliasEl.focus();
@@ -780,8 +806,12 @@
     return projectPath ? `Set-Location ${quoteForPowerShell(projectPath)}; ${core}` : core;
   }
 
-  function buildFrontdoorUrl({ instanceUrl, sid, sourceUrl }) {
+  function buildFrontdoorUrl({ instanceUrl, sid, sourceUrl, includeRetUrl }) {
     const base = instanceUrl.replace(/\/$/, "");
+    if (!includeRetUrl) {
+      return `${base}/secur/frontdoor.jsp?sid=${encodeURIComponent(sid)}`;
+    }
+
     let retUrl = "/lightning/page/home";
 
     if (sourceUrl) {
