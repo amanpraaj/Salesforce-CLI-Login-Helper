@@ -1,33 +1,50 @@
 # Salesforce CLI Login Helper
 
-This Chrome extension lets you right-click on a Salesforce org page and generate a ready-to-paste `sf org login access-token` command.
+A Chrome extension that turns the current Salesforce session into a ready-to-paste `sf org login access-token` command.
 
-## Flow
+## What It Does
 
-1. Open a Salesforce page in Chrome.
-2. Right-click and choose `Generate Salesforce CLI command`.
-3. Enter the alias you want.
-4. Fill the simple overlay modal on top of the current Salesforce page.
-5. Optionally enter a project path if you want the command to change into that folder and set the org as default there.
-6. Choose your command style: PowerShell, Command Prompt, or Bash.
-7. Copy the generated command and paste it into your terminal.
+- Right-click any supported Salesforce page.
+- Capture the current session token from the browser.
+- Generate a shell-ready login command for PowerShell, Command Prompt, or Bash.
+- Optionally copy a frontdoor URL for direct browser redirect back to the current page.
 
-## Notes
+## Features
 
-- If you leave the project path empty, the generated command authorizes with alias only.
-- If you enter a project path, the generated command changes into that folder and includes `--set-default`.
-- The command is copied to your clipboard from the extension page.
-- No helper server, VS Code extension, or `npm start` is needed.
+- Fast context-menu launch from Salesforce pages.
+- Alias field for the target org name.
+- Optional project path to set the org as default in that folder.
+- Frontdoor copy option with an unchecked default state.
+- No helper server or local runtime required.
 
-## Setup
+## Install
 
 1. Open `chrome://extensions`.
 2. Enable Developer mode.
 3. Click **Load unpacked**.
-4. Select the root folder of this extension on your machine, for example `D:\path\to\SF_TO_VS_Extension`.
+4. Select the root folder of this extension on your machine.
 
-## Main files
+## Use
 
-- `src/background.js`: Context-menu logic and session capture.
-- `src/overlay.js`: In-page modal, command generation, and clipboard copy.
-- `manifest.json`: Chrome extension manifest.
+1. Open a Salesforce org page in Chrome.
+2. Right-click and choose `Generate Salesforce CLI command`.
+3. Enter an alias.
+4. Choose your shell.
+5. Add a project path only if you want `--set-default`.
+6. Leave the redirect checkbox unchecked if you want the frontdoor URL without `retURL`.
+7. Check the redirect box if you want the current page included as `retURL`.
+8. Copy the command or frontdoor URL.
+
+## Behavior
+
+- If the project path is empty, the command authorizes with alias only.
+- If the project path is set, the command changes into that folder and includes `--set-default`.
+- If the redirect box is unchecked, the copied frontdoor URL contains only `sid`.
+- If the redirect box is checked, the copied frontdoor URL includes the current page as `retURL`.
+
+## Main Files
+
+- `src/background.js` - Context-menu logic and Salesforce session capture.
+- `src/overlay.js` - Overlay UI, command generation, and copy actions.
+- `src/options.html` - Project landing page.
+- `manifest.json` - Chrome extension manifest.
