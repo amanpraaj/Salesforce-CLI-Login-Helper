@@ -1,0 +1,9 @@
+{
+  "name": "sf-to-vs-extension",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Chrome extension for generating a ready-to-paste Salesforce CLI login command from the current Salesforce page.",
+  "scripts": {
+    "check": "node --check src/background.js && node --check src/overlay.js"
+  }
+}
